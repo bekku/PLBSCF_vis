@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+{% load util %}
+<head>
+  <meta charset=”utf-8″>
+  <style>
+    table[border="1"] {
+      border-spacing: 0;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      border: none;
+      line-height: 20px;
+
+      margin-left: auto;
+      margin-right: auto;
+      table-layout: fixed;
+      width: 80%;
+    }
+
+    table[border="1"] td,
+    table[border="1"] th {
+      padding: 5px 8px;
+      background: #FFF;
+      border: none;
+      border-top: 1px solid #999;
+      border-left: 1px solid #999;
+    }
+
+    table[border="1"] th {
+      background: #f9f9f9;
+    }
+
+    table[border="1"] tr:last-child th,
+    table[border="1"] tr:last-child td {
+      border-bottom: 1px solid #999;
+    }
+
+    table[border="1"] th:last-child,
+    table[border="1"] td:last-child {
+      border-right: 1px solid #999;
+    }
+
+    .wrapper {
+      display: flex;
+      margin-right: auto;
+      margin-left: auto;
+      text-align: center;
+    }
+
+    .wrapper>div {
+      flex: 1;
+    }
+    .center_class{text-align: center;}
+
+  </style>
+  <h1 class = center_class>PL BS CF 財務3表</h1> 
+</head>
+
+<body>
+  <p class = center_class>総勘定元帳をアップロード(csv)</p>
+  <form class = center_class action="{% url 'plbscf:csv_to_PLBSCF' %}" method='POST' enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="csv">
+    <button type="submit">送信</button>
+  </form>
+
+  <div class="wrapper" margin:0 auto;>
+
+    <div class="box1">
+      {% if context.PL_view %}
+      <h2>PL</h2>
+      <table border=1>
+        <tr>
+          <thead>
+            <th>名称</th>
+            <th>金額</th>
+          </thead>
+        </tr>
+        {% for PL_key, PL_value in context.PL_view.items %}
+        {% if PL_value|Isif_float %}
+        <tr>
+          <td><strong>{{PL_key}}</strong></td>
+          <td>{{PL_value}}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td><strong>{{PL_key}}</strong></td>
+          <td> --- </td>
+        </tr>
+        {% for PL_key2, PL_value2 in PL_value.items %}
+        <tr>
+          <td>{{ PL_key2 }}</td>
+          <td>{{PL_value2}}</td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+    </div>
+
+    <div class="box2">
+      {% if context.BS_view %}
+      {% for table, BS_values in context.BS_view.items %}
+      <h2>BS{{table}}</h2>
+      <table border=1>
+        <tr>
+          <thead>
+            <th>名称</th>
+            <th>金額</th>
+          </thead>
+        </tr>
+        {% for BS_key, BS_value in BS_values.items %}
+        {% if BS_value|Isif_float %}
+        <tr>
+          <td><strong>{{BS_key}}</strong></td>
+          <td>{{BS_value}}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td><strong>{{BS_key}}</strong></td>
+          <td> --- </td>
+        </tr>
+        {% for BS_key2, BS_value2 in BS_value.items %}
+        <tr>
+          <td>{{ BS_key2 }}</td>
+          <td>{{BS_value2}}</td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endfor %}
+      {% endif %}
+    </div>
+
+    <div class="box3">
+      {% for EachCF_name, EachCF_values in context.CF_view.items%}
+      {% if EachCF_values %}
+      <h2> {{EachCF_name}} </h2>
+      <table border=1>
+        <tr>
+          <thead>
+            <th>名称</th>
+            <th>金額</th>
+          </thead>
+        </tr>
+        {% if EachCF_values %}
+        {% for CF_key, CF_value in EachCF_values.items %}
+        {% if CF_value|Isif_float %}
+        <tr>
+          <td><strong>{{CF_key}}</strong></td>
+          <td>{{CF_value}}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td><strong>{{CF_key}}</strong></td>
+          <td> --- </td>
+        </tr>
+        {% for CF_key2, CF_value2 in CF_value.items %}
+        <tr>
+          <td>{{ CF_key2 }}</td>
+          <td>{{ CF_value2 }}</td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+
+</body>
+
+</html>
